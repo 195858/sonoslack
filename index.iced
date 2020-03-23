@@ -45,20 +45,30 @@ checkSong = ->
     postSong(track)
 
 postSong = (track) ->
+  console.log(JSON.stringify(track))
   isBroke = false
-  if track.albumArtURL.startsWith("http")
+  if track.albumArtURL != null && track.albumArtURL.startsWith("http")
     albumArtURL = track.albumArtURL
-  else
+  else if track.albumArtURL != null
     albumArtURL = "http://"+config.sonosIpAddress+":1400"+track.albumArtURL
   lastArtist = track.artist
   lastTitle = track.title
-  oneLiner = "#{track.artist} - #{track.title} - #{albumArtURL}"
+  currentTitle = track.title
+  if currentTitle.indexOf("?")>0
+    currentTitle = track.title.substr(0, track.title.indexOf('?'))
+
+  oneLiner = "#{track.artist} - #{currentTitle} - #{albumArtURL}"
 
   console.log(oneLiner)
-
-  await(download(albumArtURL, "./art.png", defer()))
-  await(imgur.uploadFile("./art.png").then(defer(imgurData)))
-
+  if albumArtURL
+    await(download(albumArtURL, "./art.png", defer()))
+    await(imgur.uploadFile("./art.png").then(defer(imgurData)))
+  imageURL = "https://image.flaticon.com/icons/png/512/124/124711.png"
+  if imgurData && imgurData.data
+    imageURL = imgurData.data.link
+  currentArtist = track.artist
+  if !currentArtist
+    currentArtist = currentTitle
   postOptions =
     link_names: 1
     attachments: [
