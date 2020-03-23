@@ -46,10 +46,13 @@ checkSong = ->
 
 postSong = (track) ->
   isBroke = false
-  albumArtURL = track.albumArtURL
+  if track.albumArtURL.startsWith("http")
+    albumArtURL = track.albumArtURL
+  else
+    albumArtURL = "http://"+config.sonosIpAddress+":1400"+track.albumArtURL
   lastArtist = track.artist
   lastTitle = track.title
-  oneLiner = "#{track.artist} - #{track.title}"
+  oneLiner = "#{track.artist} - #{track.title} - #{albumArtURL}"
 
   console.log(oneLiner)
 
